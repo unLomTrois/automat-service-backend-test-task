@@ -10,6 +10,9 @@ export class User {
 
   @Prop({ select: false })
   password: string;
+
+  // @Prop({ type: [Types.ObjectId], ref: 'Note' })
+  // notes: Note[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
