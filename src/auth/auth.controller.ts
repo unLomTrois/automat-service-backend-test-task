@@ -27,8 +27,6 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Авторизация',
-    description:
-      'Данный метод логинит клиентов и мастеров. Для работы с приложением нужно залогиниться.',
   })
   @ApiBody({
     type: LoginDto,
@@ -79,6 +77,20 @@ export class AuthController {
     const { user } = req;
 
     console.log(user);
+
+    return user;
+  }
+
+  @Get('refresh')
+  refresh(
+    @Req() req: Request & { user: User },
+    @Res({ passthrough: true }) response: Response,
+  ): User {
+    const { user } = req;
+    const payload = { _id: user._id, username: user.username };
+
+    const new_access_token = this.authService.getJwtAccessToken(payload);
+    response.setHeader('Set-Cookie', new_access_token.cookie);
 
     return user;
   }
