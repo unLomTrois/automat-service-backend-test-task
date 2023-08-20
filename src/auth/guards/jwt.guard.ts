@@ -12,14 +12,14 @@ export class JwtGuard extends AuthGuard('jwt') {
     status: any,
   ): any {
     if (info?.message == 'No auth token') {
-      throw new UnauthorizedException('В запросе нет токена авторизации');
+      throw new UnauthorizedException('No auth token');
     }
     if (info instanceof TokenExpiredError) {
-      throw new UnauthorizedException('Просрочен токен авторизации!');
+      throw new UnauthorizedException('Expired Token');
     }
 
     if (info instanceof JsonWebTokenError) {
-      throw new UnauthorizedException('Invalid Token!');
+      throw new UnauthorizedException('Invalid Token');
     }
 
     return super.handleRequest(err, user, info, context, status);
