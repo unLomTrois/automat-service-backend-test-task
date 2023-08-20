@@ -10,8 +10,6 @@ $ npm install
 
 ## Docker
 
-Все данные уже в папке data, нужно запустить docker
-
 ```bash
 $ docker compose up
 ```
@@ -28,3 +26,7 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Создание админа
+
+http://localhost:3000/api - апи в сваггере, там есть метод Post для ресурса User, пароль хешируется
