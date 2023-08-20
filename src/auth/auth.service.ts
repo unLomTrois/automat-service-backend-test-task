@@ -41,8 +41,8 @@ export class AuthService {
     password: string,
     hashed_password: string,
   ): Promise<boolean> {
-    // const isPasswordMatching = await bcrypt.compare(password, hashed_password);
-    const isPasswordMatching = password === hashed_password;
+    const isPasswordMatching = await bcrypt.compare(password, hashed_password);
+    // const isPasswordMatching = password === hashed_password;
     if (!isPasswordMatching) {
       throw new UnauthorizedException('Неправильный логин или пароль!');
     }
