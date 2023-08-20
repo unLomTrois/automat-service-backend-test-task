@@ -1,15 +1,18 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LocalGuard } from './guards/local';
+import { User } from 'src/user/schemas/user.schema';
+import { JwtGuard } from './guards/jwt.guard';
 
+@ApiTags('AUTH')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -23,44 +26,48 @@ export class AuthController {
     type: LoginDto,
     description: 'Прежде чем залогиниться, зарегистрируйте пользователя',
     examples: {
-      client: {
-        summary: 'Клиент',
-        description: 'Обыкновенный клиент',
+      admin: {
+        summary: 'admin',
+        description: 'admin',
         value: {
           username: 'admin',
-          password: 'client',
-          role: 'client',
+          password: 'admin',
         } as LoginDto,
       },
     },
   })
   @Post('login')
   @ApiOkResponse({
-    // type: ClientDto,
+    type: User,
     description: 'При входе, в куки записываются токены авторизации',
   })
   @ApiUnauthorizedResponse({ description: 'Неправильный логин или пароль!' })
-  @UseGuards(LocalGuard)
   async login(
     @Body() { password, username }: LoginDto,
     @Res({ passthrough: true }) response: Response<any>,
   ): Promise<any> {
-    //* тут нет try-catch, потому что логин происходит в паспорт-стратегии
+    console.log(password, username);
+    const user = await this.authService.validateUser({
+      username,
+      password,
+    });
 
-    // const payload = {};
+    const payload = { _id: user._id, username: user.username };
 
-    // const access_token = this.authService.getJwtAccessToken(payload);
-    // const refresh_token = this.authService.getJwtRefreshToken(payload);
+    const access_token = this.authService.getJwtAccessToken(payload);
+    const refresh_token = this.authService.getJwtRefreshToken(payload);
 
-    // response.setHeader('Set-Cookie', [
-    //   access_token.cookie,
-    //   refresh_token.cookie,
-    // ]);
+    response.setHeader('Set-Cookie', [
+      access_token.cookie,
+      refresh_token.cookie,
+    ]);
 
-    // user.password = undefined;
+    return payload;
+  }
 
-    const user = { username, password };
-
-    return user;
+  @Get('test')
+  @UseGuards(JwtGuard)
+  async test() {
+    return 'kek';
   }
 }

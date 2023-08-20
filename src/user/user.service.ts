@@ -17,6 +17,19 @@ export class UserService {
     return user.save();
   }
 
+  async findOneByUsername(
+    username: string,
+    with_password = false,
+  ): Promise<User> {
+    const query = this.userModel.findOne({ username });
+
+    if (with_password) {
+      return query.select('+password');
+    }
+
+    return query.exec();
+  }
+
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }

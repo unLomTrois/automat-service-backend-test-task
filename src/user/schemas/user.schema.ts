@@ -11,6 +11,8 @@ export class User {
   @Prop({ select: false })
   password: string;
 
+  _id?: string;
+
   // @Prop({ type: [Types.ObjectId], ref: 'Note' })
   // notes: Note[];
 }
