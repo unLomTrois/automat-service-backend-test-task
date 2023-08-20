@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOkResponse,
@@ -65,9 +73,25 @@ export class AuthController {
     return payload;
   }
 
-  @Get('test')
+  @Get('me')
   @UseGuards(JwtGuard)
-  async test() {
-    return 'kek';
+  async Me(@Req() req: Request & { user: User }): Promise<User> {
+    const { user } = req;
+
+    console.log(user);
+
+    return user;
+  }
+
+  @Get('logout')
+  @UseGuards(JwtGuard)
+  @ApiOkResponse({ description: 'Успешный выход' })
+  Logout(@Res({ passthrough: true }) response: Response<any>): string {
+    response.setHeader('Set-Cookie', [
+      'Authentication=; HttpOnly; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; Path=/; Max-Age=0',
+    ]);
+
+    return 'Успешный выход';
   }
 }
