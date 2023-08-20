@@ -12,8 +12,8 @@ export class NotesService {
     private noteModel: Model<Note>,
   ) {}
 
-  create(dto: CreateNoteDto) {
-    return this.noteModel.create(dto);
+  create(author_id: string, dto: CreateNoteDto) {
+    return this.noteModel.create({ ...dto, author: author_id });
   }
 
   findAll() {
@@ -40,7 +40,16 @@ export class NotesService {
       .exec();
   }
 
-  remove(author_id: string, note_id: string) {
+  async remove(author_id: string, note_id: string) {
+    const kek = await this.noteModel
+      .findOneAndDelete({
+        _id: note_id,
+        author: author_id,
+      })
+      .exec();
+
+    console.log(kek, 'kek');
+
     return this.noteModel
       .findOneAndDelete({ _id: note_id, author: author_id })
       .exec();

@@ -18,7 +18,7 @@ export class Note {
   @Prop()
   description: string;
 
-  @Prop({ default: Date.now() })
+  @Prop({ default: () => Date.now() })
   timestamp: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

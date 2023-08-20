@@ -9,8 +9,4 @@ export class CreateNoteDto {
   @ApiProperty()
   @IsString()
   description: string;
-
-  @ApiProperty()
-  @IsString()
-  author: string;
 }

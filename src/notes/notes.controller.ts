@@ -19,6 +19,10 @@ import { User } from 'src/user/schemas/user.schema';
 import { Note } from './schemas/note.schema';
 import { ObjectId } from 'mongoose';
 
+const sleep = async (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 @ApiTags('Notes')
 @Controller('notes')
 @UseGuards(JwtGuard)
@@ -26,45 +30,62 @@ export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.notesService.create(createNoteDto);
+  create(
+    @Req() request: Request & { user: User },
+    @Body() createNoteDto: CreateNoteDto,
+  ) {
+    const { _id } = request.user;
+    console.log(_id, request.user);
+    // return 'cringe';
+    return this.notesService.create(_id, createNoteDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
+    await sleep(2000);
     return this.notesService.findAll();
   }
 
   @Get('author/:id')
-  findByAuthor(@Param('id') id: string) {
+  async findByAuthor(@Param('id') id: string) {
+    await sleep(2000);
+
     return this.notesService.findByAuthor(id);
   }
 
   @Get('me')
-  findByMe(@Req() req: Request & { user: User }): Promise<Note[]> {
+  async findByMe(@Req() req: Request & { user: User }): Promise<Note[]> {
     const { _id } = req.user;
+    await sleep(2000);
 
     return this.notesService.findByAuthor(_id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
+    await sleep(2000);
+
     return this.notesService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Req() req: Request & { user: User },
     @Param('id') id: string,
     @Body() updateNoteDto: UpdateNoteDto,
   ) {
+    await sleep(2000);
     const { user } = req;
     return this.notesService.update(user._id, id, updateNoteDto);
   }
 
   @Delete(':id')
-  remove(@Req() req: Request & { user: User }, @Param('id') id: string) {
+  async remove(@Req() req: Request & { user: User }, @Param('id') id: string) {
     const { user } = req;
+
+    await sleep(2000);
+
+    console.log('delete note', user._id, id);
 
     return this.notesService.remove(user._id, id);
   }
